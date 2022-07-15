@@ -1,8 +1,52 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %} {% block body %}
+<div class="container mt-4">
+  <h1>Dicas e Tutoriais</h1>
+  <p>
+    Um blog desenvolvido em Flask com informações, dicas e tutoriais sobre
+    desenvolvimento de Software!
+  </p>
+  <hr />
 
-{% block body %}
-    <div class="text-center">
-        <h1>Sistema Flask!</h1>
-        <p>Vai Sair!</p>
+  {% for post in posts %}
+
+  <div class="row border mt-4 p-3 criarPost">
+    <div class="col-3">
+      <div class="image pe-2">
+        <img
+          src="{{ path_foto_perfil + post.autor.foto_perfil }}"
+          class="rounded"
+          width="200"
+        />
+      </div>
+      <div class="row">
+        <div class="col d-flex justify-content-center">
+          <strong> {{post.autor.username}} </strong>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col d-flex justify-content-center">
+          {% for curso in post.autor.cursos.split(';') %}
+          <span class="badge bg-success me-2">{{ curso }}</span>
+          {% endfor %}
+        </div>
+      </div>
     </div>
+    <div class="col-9">
+      <h5 class="">
+        {{ post.titulo }}
+        <small class="text-muted" style="font-size: 15px">
+          - Data de Criação: {{ post.data_criacao.strftime('%d/%m/%Y') }}</small
+        >
+      </h5>
+      <p>{{ post.corpo }}</p>
+      <div class="d-flex justify-content-end">
+        <a href="{{ url_for('exibir_post', post_id = post.id) }}">
+          <button type="button" class="btn btn-success">Ver mais</button>
+        </a>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
 {% endblock %}

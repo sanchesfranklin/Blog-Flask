@@ -1,11 +1,55 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %} {% block body %}
+<div class="container mt-4">
+  <h1 style="text-align: center">Usuários</h1>
+  <div class="row">
+    {% for usuario in lista_usuarios %}
+    <div class="col d-flex justify-content-center">
+      <div class="card-usuarios mt-5 mb-3">
+        <div class="upper">
+          <img src="../static/imgs/capa_perfil.jpg" class="img-fluid" />
+        </div>
 
-{% block body %}
-    <div class="container">
-        <h1>Usuários</h1>
-        {% for usuario in lista_usuarios %}
-            <p>{{usuario}}</p>
-            <hr>
-        {% endfor %}
+        <div class="user text-center">
+          <div class="profile">
+            <img
+              src="{{ path_foto_perfil + usuario.foto_perfil }}"
+              class="rounded-circle"
+              width="80"
+            />
+          </div>
+        </div>
+
+        <div class="mt-5 text-center">
+          <h4 class="mb-0">{{usuario.username}}</h4>
+          <span class="text-muted d-block mb-2">{{usuario.email}}</span>
+
+          <div
+            class="d-flex justify-content-between align-items-center mt-2 px-4"
+          >
+            <div class="stats-usuarios">
+              <h6 class="mb-0">Cursos</h6>
+              <span>{{ current_user.cursos.count(';') + 1 }}</span>
+            </div>
+
+            <div class="stats-usuarios">
+              <h6 class="mb-0">Posts</h6>
+              <span>0</span>
+            </div>
+          </div>
+        </div>
+        <div class="justify-content-center">
+          <div class="col" style="text-align: center">
+            <strong>Cursos</strong><br />
+            {% for curso in usuario.cursos.split(';') %}
+            <span class="badge bg-success">{{ curso }}</span>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
     </div>
-{% endblock %}
+
+    <hr />
+    {% endfor %}
+  </div>
+  {% endblock %}
+</div>

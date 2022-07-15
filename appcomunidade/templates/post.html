@@ -1,0 +1,43 @@
+{% extends 'base.html' %} {% block body %}
+<div class="container mt-4">
+    <div class="row border mt-4 p-3 criarPost">
+        <div class="col-3">
+            <div class="image pe-2">
+                <img
+                    src="{{ path_foto_perfil + post.autor.foto_perfil }}"
+                    class="rounded"
+                    width="200"
+                />
+            </div>
+            <div class="row">
+                <div class="col d-flex justify-content-center">
+                    <strong> {{post.autor.username}} </strong>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex justify-content-center">
+                    {% for curso in post.autor.cursos.split(';') %}
+                    <span class="badge bg-success me-2">{{ curso }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="col-9">
+            <h5 class="">
+                {{ post.titulo }} {% if form %} -
+                <a
+                    class="w-100"
+                    href="{{ url_for('editar_post', post_id = post.id) }}"
+                >
+                    <button class="btn btn-success btn-sm">Editar</button>
+                </a>
+                <button class="btn btn-danger btn-sm">Excluir</button>
+
+                {% endif %}
+            </h5>
+            <p>{{ post.corpo }}</p>
+        </div>
+    </div>
+</div>
+
+{% block form_editar_post %} {% endblock %} {% endblock %}

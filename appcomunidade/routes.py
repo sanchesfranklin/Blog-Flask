@@ -1,17 +1,17 @@
 from flask import render_template, redirect, url_for, flash, request
 from appcomunidade import app, database, bcrypt
-from appcomunidade.forms import FormLogin, FormCriarConta, FormEditarPerfil
-from appcomunidade.models import Usuario
+from appcomunidade.forms import FormLogin, FormCriarConta, FormEditarPerfil, FormCriarPost
+from appcomunidade.models import Usuario, Post
 from flask_login import login_user, logout_user, current_user, login_required
 import secrets
 import os
 from PIL import Image
 
-lista_usuarios = ['Sanches', 'Luana', 'Gabriel', 'Lucia', 'Josias']
-
 @app.route("/")
 def home():
-    return render_template('home.html')
+    posts = Post.query.order_by(Post.id.desc())
+    path_foto_perfil = url_for('static', filename='fotos_perfil/')
+    return render_template('home.html', posts = posts, path_foto_perfil = path_foto_perfil)
 
 @app.route("/contato")
 def contato():
@@ -20,7 +20,9 @@ def contato():
 @app.route("/usuarios")
 @login_required
 def usuarios():
-    return render_template('usuarios.html', lista_usuarios=lista_usuarios)
+    path_foto_perfil = url_for('static', filename='fotos_perfil/')
+    lista_usuarios = Usuario.query.all()
+    return render_template('usuarios.html', lista_usuarios=lista_usuarios, path_foto_perfil=path_foto_perfil)
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
@@ -116,5 +118,45 @@ def editar_perfil():
 @app.route('/post/criar', methods=['GET', 'POST'])
 @login_required
 def criar_post():
-    return render_template('editarperfil.html')
+    form = FormCriarPost()
+    if form.validate_on_submit():
+        post = Post(titulo = form.titulo.data, corpo = form.corpo.data, autor = current_user)
+        database.session.add(post)
+        database.session.commit()
+        flash('Post criado com sucesso!', 'alert-success')
+        return redirect(url_for('home'))
+    return render_template('criarpost.html', form=form)
+
+
+
+@app.route('/post/<post_id>')
+def exibir_post(post_id):
+    post = Post.query.get(post_id)
+    path_foto_perfil = url_for('static', filename='fotos_perfil/')
+    if current_user == post.autor:
+        form = FormCriarPost()
+    else:
+        form = None
+    return render_template('post.html', post=post, path_foto_perfil = path_foto_perfil, form = form)
+
+
+@app.route('/post/editar/<post_id>', methods=['GET', 'POST'])
+@login_required
+def editar_post(post_id):
+    post = Post.query.get(post_id)
+    path_foto_perfil = url_for('static', filename='fotos_perfil/')
+    if current_user == post.autor:
+        form = FormCriarPost()
+        if request.method == 'GET':
+            form.titulo.data = post.titulo
+            form.corpo.data = post.corpo
+        elif form.validate_on_submit():
+            post.titulo = form.titulo.data
+            post.corpo = form.corpo.data
+            database.session.commit()
+            flash('Post atualizado com sucesso!', 'alert-success')
+            return redirect(url_for('home'))
+    else:
+        form = None
+    return render_template('editarpost.html', post=post, form = form, path_foto_perfil = path_foto_perfil)
 
