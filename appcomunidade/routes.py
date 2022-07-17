@@ -1,4 +1,4 @@
-from flask import render_template, redirect, url_for, flash, request
+from flask import render_template, redirect, url_for, flash, request, abort
 from appcomunidade import app, database, bcrypt
 from appcomunidade.forms import FormLogin, FormCriarConta, FormEditarPerfil, FormCriarPost
 from appcomunidade.models import Usuario, Post
@@ -159,4 +159,17 @@ def editar_post(post_id):
     else:
         form = None
     return render_template('editarpost.html', post=post, form = form, path_foto_perfil = path_foto_perfil)
+
+
+@app.route('/post/<post_id>/excluir', methods=['GET', 'POST'])
+@login_required
+def excluir_post(post_id):
+    post = Post.query.get(post_id)
+    if current_user == post.autor:
+        database.session.delete(post)
+        database.session.commit()
+        flash('Post excluído com sucesso!', 'alert-success')
+        return redirect(url_for('home'))
+    else:
+        abort(403, 'Você não tem acesso para executar esta ação!')
 

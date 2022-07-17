@@ -2,12 +2,14 @@
 <div class="container mt-4">
     <div class="row border mt-4 p-3 criarPost">
         <div class="col-3">
-            <div class="image pe-2">
-                <img
-                    src="{{ path_foto_perfil + post.autor.foto_perfil }}"
-                    class="rounded"
-                    width="200"
-                />
+            <div class="row">
+                <div class="col-md-2 image pe-2" id="foto-perfil">
+                    <img
+                        src="{{ path_foto_perfil + post.autor.foto_perfil }}"
+                        class="rounded"
+                        width="200"
+                    />
+                </div>
             </div>
             <div class="row">
                 <div class="col d-flex justify-content-center">
@@ -23,21 +25,87 @@
             </div>
         </div>
         <div class="col-9">
-            <h5 class="">
-                {{ post.titulo }} {% if form %} -
-                <a
-                    class="w-100"
-                    href="{{ url_for('editar_post', post_id = post.id) }}"
-                >
-                    <button class="btn btn-success btn-sm">Editar</button>
-                </a>
-                <button class="btn btn-danger btn-sm">Excluir</button>
+            <div class="row">
+                <div class="col-8">
+                    <h5 class="">{{ post.titulo }}</h5>
+                </div>
+                <div class="col-4">
+                    <div class="d-flex justify-content-end">
+                        {% if form %}
+                        <a
+                            href="{{ url_for('editar_post', post_id = post.id) }}"
+                        >
+                            <button class="btn btn-success btn-sm me-2">
+                                <i class="fas fa-pen"></i>
+                                &nbsp;Editar
+                            </button>
+                        </a>
+                        <button
+                            class="btn btn-danger btn-sm"
+                            data-bs-toggle="modal"
+                            data-bs-target="#excluirPostModal"
+                        >
+                            <i class="fas fa-trash-alt"></i>
+                            &nbsp;Excluir
+                        </button>
 
-                {% endif %}
-            </h5>
-            <p>{{ post.corpo }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <p>{{ post.corpo }}</p>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
-{% block form_editar_post %} {% endblock %} {% endblock %}
+{% block form_editar_post %} {% endblock %}
+
+<!-- Modal Excluir Post -->
+<div
+    class="modal fade"
+    id="excluirPostModal"
+    tabindex="-1"
+    aria-labelledby="excluirPostModalLabel"
+    aria-hidden="true"
+>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="excluirPostModalLabel">
+                    Excluir Post
+                </h5>
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                ></button>
+            </div>
+            <div class="modal-body">
+                Tem certeza que deseja excluir este post?
+            </div>
+            <div class="modal-footer">
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal"
+                >
+                    Cancelar
+                </button>
+                <form
+                    method="POST"
+                    action=" {{ url_for('excluir_post', post_id=post.id) }}"
+                >
+                    <button type="submit" class="btn btn-danger">
+                        Excluir
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
