@@ -27,7 +27,7 @@ def usuarios():
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     form_login = FormLogin()
-    form_criarConta = FormCriarConta()
+    # form_criarConta = FormCriarConta()
 
     if form_login.validate_on_submit() and 'botao_submit_login' in request.form:
         usuario = Usuario.query.filter_by(email=form_login.email.data).first()
@@ -41,6 +41,27 @@ def login():
                 return redirect(url_for('home'))
         else:
             flash('Falha no login. Email ou Senha incorretos!', 'alert-danger')
+    """ if form_criarConta.validate_on_submit() and 'botao_submit_criarconta' in request.form:
+        # Declarando variáveis
+        username = form_criarConta.username.data
+        email = form_criarConta.email.data
+        senha_crypt = bcrypt.generate_password_hash(form_criarConta.senha.data)
+        # Criar usuário
+        usuario = Usuario(username=username, email=email, senha=senha_crypt)
+        # Adicionar a sessão do banco de dados
+        database.session.add(usuario)
+        # Dar um commit na sessão
+        database.session.commit()
+        flash(f'Conta criada com sucesso no email: {form_criarConta.email.data}', 'alert-success')
+        return redirect(url_for('home')) """
+
+    return render_template('login.html', form_login = form_login)
+
+@app.route("/criarlogin", methods=['GET', 'POST'])
+def criar_login():
+
+    form_criarConta = FormCriarConta()
+
     if form_criarConta.validate_on_submit() and 'botao_submit_criarconta' in request.form:
         # Declarando variáveis
         username = form_criarConta.username.data
@@ -55,7 +76,10 @@ def login():
         flash(f'Conta criada com sucesso no email: {form_criarConta.email.data}', 'alert-success')
         return redirect(url_for('home'))
 
-    return render_template('login.html', form_login = form_login, form_criarConta = form_criarConta)
+    return render_template('criarlogin.html', form_criarConta = form_criarConta)
+
+
+
 
 @app.route('/sair')
 @login_required
